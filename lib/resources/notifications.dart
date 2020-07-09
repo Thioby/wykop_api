@@ -1,6 +1,7 @@
 import 'package:wykop_api/infrastucture/api.dart';
 import 'package:wykop_api/infrastucture/data/model/NotificationDto.dart';
 import 'package:wykop_api/infrastucture/client.dart';
+import 'package:wykop_api/resources/resources.dart';
 
 class NotificationsApi extends ApiResource {
   final NotificationResponseToNotificationDtoMapper _notificationDtoMapper;

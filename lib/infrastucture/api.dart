@@ -5,33 +5,22 @@ import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:wykop_api/infrastucture/client.dart';
 import 'package:wykop_api/infrastucture/data/AuthCredentials.dart';
-import 'package:wykop_api/infrastucture/resources/embed.dart';
-import 'package:wykop_api/infrastucture/resources/entries.dart';
-import 'package:wykop_api/infrastucture/resources/links.dart';
-import 'package:wykop_api/infrastucture/resources/mywykop.dart';
-import 'package:wykop_api/infrastucture/resources/notifications.dart';
-import 'package:wykop_api/infrastucture/resources/pm.dart';
-import 'package:wykop_api/infrastucture/resources/profiles.dart';
-import 'package:wykop_api/infrastucture/resources/search.dart';
-import 'package:wykop_api/infrastucture/resources/suggest.dart';
-import 'package:wykop_api/infrastucture/resources/tags.dart';
-import 'package:wykop_api/infrastucture/resources/users.dart';
 import 'package:wykop_api/injection/Injector.dart';
 import 'package:wykop_api/injection/api/api_injection.dart';
 import 'package:wykop_api/injection/api/mappers_injection.dart';
+import 'package:wykop_api/injection/usecase/use_case_injection.dart';
+import 'package:wykop_api/resources/embed.dart';
+import 'package:wykop_api/resources/entries.dart';
+import 'package:wykop_api/resources/links.dart';
+import 'package:wykop_api/resources/mywykop.dart';
+import 'package:wykop_api/resources/notifications.dart';
+import 'package:wykop_api/resources/pm.dart';
+import 'package:wykop_api/resources/profiles.dart';
+import 'package:wykop_api/resources/search.dart';
+import 'package:wykop_api/resources/suggest.dart';
+import 'package:wykop_api/resources/tags.dart';
+import 'package:wykop_api/resources/users.dart';
 
-export 'resources/api_resource.dart';
-export 'resources/embed.dart';
-export 'resources/entries.dart';
-export 'resources/links.dart';
-export 'resources/mywykop.dart';
-export 'resources/notifications.dart';
-export 'resources/pm.dart';
-export 'resources/profiles.dart';
-export 'resources/search.dart';
-export 'resources/suggest.dart';
-export 'resources/tags.dart';
-export 'resources/users.dart';
 export 'response_models/author_response.dart';
 export 'response_models/author_suggestion_response.dart';
 export 'response_models/conversation_response.dart';
@@ -49,7 +38,6 @@ export 'response_models/related_response.dart';
 export 'response_models/serializers.dart';
 export 'response_models/tag_suggestion_response.dart';
 
-
 String generateMd5(String data) {
   var content = Utf8Encoder().convert(data);
   var md5 = crypto.md5;
@@ -57,7 +45,6 @@ String generateMd5(String data) {
 
   return hex.encode(digest.bytes);
 }
-
 
 class WykopApiClient {
   final ApiClient _client;
@@ -82,7 +69,6 @@ class WykopApiClient {
   final EmbedApi embed;
   final PmApi pm;
 
-
   Future<void> ensureSynced() async {
     await this._client.syncCredsFromStorage();
   }
@@ -94,13 +80,13 @@ class WykopApiClient {
   WykopApiClient(this._client, this.search, this.links, this.entries, this.users, this.mywykop, this.tags,
       this.profiles, this.notifications, this.suggest, this.embed, this.pm) {
     _client.initialize();
-
   }
 }
 
 class ApiInitializer {
-  ApiInitializer initialize(ApiClient client){
+  ApiInitializer initialize(ApiClient client) {
     setupMappersDeps();
+    setupUseCaseDeps(client);
     setupApiDeps(client);
     return this;
   }
@@ -122,4 +108,3 @@ class ApiInitializer {
     );
   }
 }
-

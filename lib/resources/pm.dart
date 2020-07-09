@@ -5,6 +5,7 @@ import 'package:wykop_api/infrastucture/data/model/ConversationDto.dart';
 import 'package:wykop_api/infrastucture/data/model/InputData.dart';
 import 'package:wykop_api/infrastucture/data/model/PmMessageDto.dart';
 import 'package:wykop_api/infrastucture/client.dart';
+import 'package:wykop_api/resources/resources.dart';
 
 class PmApi extends ApiResource {
   final ConversationResponseToConversationDtoMapper _conversationDtoMapper;

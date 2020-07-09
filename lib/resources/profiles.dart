@@ -9,6 +9,7 @@ import 'package:wykop_api/infrastucture/data/model/LinkCommentDto.dart';
 import 'package:wykop_api/infrastucture/data/model/LinkDto.dart';
 import 'package:wykop_api/infrastucture/data/model/ProfileRelatedDto.dart';
 import 'package:wykop_api/infrastucture/client.dart';
+import 'package:wykop_api/resources/resources.dart';
 
 class ProfilesApi extends ApiResource {
   final EntryResponseToDtoMapper _entryResponseToDtoMapper;

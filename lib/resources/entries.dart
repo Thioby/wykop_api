@@ -1,41 +1,46 @@
+import 'package:wykop_api/domain/entries/entrires_actions_use_case.dart';
+import 'package:wykop_api/domain/entries/entry_action_type.dart';
 import 'package:wykop_api/infrastucture/api.dart';
-import 'package:wykop_api/infrastucture/data/model/InputData.dart';
+import 'package:wykop_api/infrastucture/client.dart';
 import 'package:wykop_api/infrastucture/data/model/EntryCommentDto.dart';
 import 'package:wykop_api/infrastucture/data/model/EntryDto.dart';
+import 'package:wykop_api/infrastucture/data/model/InputData.dart';
 import 'package:wykop_api/infrastucture/data/model/VoterDto.dart';
-import 'package:wykop_api/infrastucture/client.dart';
 import 'package:wykop_api/infrastucture/response_models/voter_response.dart';
+import 'package:wykop_api/resources/resources.dart';
 
 class EntriesApi extends ApiResource {
   final EntryResponseToDtoMapper _entryResponseToDtoMapper;
   final EntryCommentResponseToEntryCommentDtoMapper _commentDtoMapper;
   final VoterResponseToVoterDtoMapper _voterResponseToVoterDtoMapper;
+  final EntriesActionsUseCase _entriesActionsUseCase;
 
-  EntriesApi(ApiClient client, this._entryResponseToDtoMapper, this._commentDtoMapper, this._voterResponseToVoterDtoMapper) : super(client);
+  EntriesApi(ApiClient client, this._entryResponseToDtoMapper, this._commentDtoMapper,
+      this._voterResponseToVoterDtoMapper, this._entriesActionsUseCase)
+      : super(client);
 
 // entry actions use case
   Future<List<EntryDto>> getFavorite(int page) async {
-    var items = await client.request('entries', 'observed', named: {'page': page.toString()});
-    return client.deserializeList(EntryResponse.serializer, items).map(_entryResponseToDtoMapper.apply).toList();
+    final params = {'page': page.toString()};
+    return _entriesActionsUseCase.execute(type: EntryActionsType.OBSERVED, params: params);
   }
 
   Future<List<EntryDto>> getHot(int page, String period) async {
-    var items = await client.request('entries', 'hot', named: {'period': period, 'page': page.toString()});
-    return client.deserializeList(EntryResponse.serializer, items).map(_entryResponseToDtoMapper.apply).toList();
+    final params = {'period': period, 'page': page.toString()};
+    return _entriesActionsUseCase.execute(type: EntryActionsType.HOT, params: params);
   }
 
   Future<List<EntryDto>> getNewest(int page) async {
-    var items = await client.request('entries', 'stream', named: {'page': page.toString()});
-    return client.deserializeList(EntryResponse.serializer, items).map(_entryResponseToDtoMapper.apply).toList();
+    final params = {'page': page.toString()};
+    return _entriesActionsUseCase.execute(type: EntryActionsType.STREAM, params: params);
   }
 
   Future<List<EntryDto>> getActive(int page) async {
-    var items = await client.request('entries', 'active', named: {'page': page.toString()});
-    return client.deserializeList(EntryResponse.serializer, items).map(_entryResponseToDtoMapper.apply).toList();
+    final params = {'page': page.toString()};
+    return _entriesActionsUseCase.execute(type: EntryActionsType.ACTIVE, params: params);
   }
 
   //end of entry actions
-
 
   Future<EntryDto> getEntry(int id) async {
     var items = await client.request('entries', 'entry', api: [id.toString()]);
@@ -128,5 +133,4 @@ class EntriesApi extends ApiResource {
   EntryCommentDto deserializeEntryComment(dynamic item) {
     return _commentDtoMapper.apply(client.deserializeElement(EntryCommentResponse.serializer, item));
   }
-
 }

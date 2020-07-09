@@ -1,5 +1,4 @@
-
-import 'entry_action_type.dart';
+import 'package:wykop_api/domain/entries/entry_action_type.dart';
 
 String getActionNameByType(EntryActionsType type) {
   switch (type) {

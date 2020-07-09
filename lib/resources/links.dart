@@ -1,10 +1,11 @@
+import 'package:wykop_api/domain/link/link_vote_state.dart';
 import 'package:wykop_api/infrastucture/api.dart';
 import 'package:wykop_api/infrastucture/data/model/InputData.dart';
 import 'package:wykop_api/infrastucture/data/model/LinkCommentDto.dart';
 import 'package:wykop_api/infrastucture/data/model/LinkDto.dart';
 import 'package:wykop_api/infrastucture/data/model/RelatedDto.dart';
 import 'package:wykop_api/infrastucture/client.dart';
-
+import 'package:wykop_api/resources/resources.dart';
 // Used for vote up, vote down and vote cancel responses
 class VoteStateResponse {
   final int votesPlus;
@@ -19,12 +20,6 @@ class BuryReason {
   static const FAKE_INFO = 3;
   static const NOT_APPROPRIATE_CONTENT = 4;
   static const INVALID = 5;
-}
-
-enum LinkVoteState {
-  DIGGED,
-  BURIED,
-  NONE,
 }
 
 class DigResponse {

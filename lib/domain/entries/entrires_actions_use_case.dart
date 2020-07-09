@@ -1,8 +1,7 @@
-import 'package:wykop_api/domain/entry/common.dart';
+import 'package:wykop_api/domain/entries/common.dart';
+import 'package:wykop_api/domain/entries/entry_action_type.dart';
 import 'package:wykop_api/infrastucture/client.dart';
 import 'package:wykop_api/infrastucture/data/model/EntryDto.dart';
-
-import 'entry_action_type.dart';
 
 class EntriesActionsUseCase {
   final ApiClient _client;

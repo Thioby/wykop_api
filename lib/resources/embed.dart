@@ -2,7 +2,7 @@ import 'package:wykop_api/infrastucture/client.dart';
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:wykop_api/infrastucture/api.dart';
+import 'package:wykop_api/resources/resources.dart';
 
 ///
 /// EmbedApi handles getting direct media url from various streaming

@@ -4,6 +4,7 @@ import 'package:wykop_api/infrastucture/data/model/EntryDto.dart';
 import 'package:wykop_api/infrastucture/data/model/EntryLinkDto.dart';
 import 'package:wykop_api/infrastucture/data/model/LinkDto.dart';
 import 'package:wykop_api/infrastucture/client.dart';
+import 'package:wykop_api/resources/resources.dart';
 
 class TagMeta {
   final String description;

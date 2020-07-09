@@ -2,6 +2,7 @@ import 'package:wykop_api/infrastucture/api.dart';
 import 'package:wykop_api/infrastucture/data/model/AuthorSuggestionDto.dart';
 import 'package:wykop_api/infrastucture/data/model/TagSuggestionDto.dart';
 import 'package:wykop_api/infrastucture/client.dart';
+import 'package:wykop_api/resources/resources.dart';
 
 class SuggestApi extends ApiResource {
   final TagSuggestionResponseToTagSuggestionDtoMapper _tagSuggestionDtoMapper;
