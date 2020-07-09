@@ -1,4 +1,4 @@
-import 'package:wykop_api/data/model/dtoModels.dart';
+import 'package:wykop_api/infrastucture/data/model/dtoModels.dart';
 import 'package:wykop_api/injection/Injector.dart';
 
 void setupMappersDeps() {

@@ -1,9 +1,9 @@
-import 'package:wykop_api/api/api.dart';
-import 'package:wykop_api/api/client.dart';
+import 'package:wykop_api/infrastucture/api.dart';
+import 'package:wykop_api/infrastucture/client.dart';
 import 'package:wykop_api/injection/Injector.dart';
 
-void setupApiDeps() {
-  appInjector.addDependency<ApiClient>(() => ApiClient());
+void setupApiDeps(ApiClient client) {
+  appInjector.addDependency<ApiClient>(() => client);
   appInjector.addDependency<LinksApi>(() => LinksApi(appInjector.getDependency(), appInjector.getDependency(),
       appInjector.getDependency(), appInjector.getDependency()));
   appInjector.addDependency<TagsApi>(() => TagsApi(appInjector.getDependency(), appInjector.getDependency(),
@@ -30,6 +30,4 @@ void setupApiDeps() {
   appInjector.addDependency<EntriesApi>(() => EntriesApi(appInjector.getDependency(), appInjector.getDependency(),
       appInjector.getDependency(), appInjector.getDependency()));
   appInjector.addDependency<UsersApi>(() => UsersApi(appInjector.getDependency()));
-
-
 }

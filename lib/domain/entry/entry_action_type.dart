@@ -1,0 +1,1 @@
+enum EntryActionsType { OBSERVED, HOT, STREAM, ACTIVE }
