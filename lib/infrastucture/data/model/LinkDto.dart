@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:wykop_api/infrastucture/api.dart';
 import 'package:wykop_api/domain/mapper/mapper.dart';
+import 'package:wykop_api/infrastucture/api.dart';
 import 'package:wykop_api/infrastucture/data/model/AuthorDto.dart';
 
 class LinkDto implements Equatable {
@@ -41,25 +41,7 @@ class LinkDto implements Equatable {
   final String app;
 
   LinkDto(
-      {this.id,
-      this.date,
-      this.title,
-      this.description,
-      this.tags,
-      this.sourceUrl,
-      this.voteCount,
-      this.buryCount,
-      this.isFavorite,
-      this.commentsCount,
-      this.relatedCount,
-      this.voteState,
-      this.author,
-      this.preview,
-      this.isHot,
-      this.isExpanded,
-      this.canVote,
-      this.violationUrl,
-      this.app});
+      {this.id, this.date, this.title, this.description, this.tags, this.sourceUrl, this.voteCount, this.buryCount, this.isFavorite, this.commentsCount, this.relatedCount, this.voteState, this.author, this.preview, this.isHot, this.isExpanded, this.canVote, this.violationUrl, this.app});
 
   @override
   List<Object> get props => [id];
@@ -75,6 +57,8 @@ class LinkResponseToLinkDtoMapper implements DataMapper<LinkResponse, LinkDto> {
 
   @override
   LinkDto apply(LinkResponse response) {
+    if (response == null) return null;
+
     var voteState = LinkVoteState.NONE;
     if (response.userVote == "dig") {
       voteState = LinkVoteState.DIGGED;
@@ -84,8 +68,7 @@ class LinkResponseToLinkDtoMapper implements DataMapper<LinkResponse, LinkDto> {
       voteState = LinkVoteState.BURIED;
     }
 
-    return LinkDto(
-      id: response.id,
+    return LinkDto(id: response.id,
       date: response.date,
       title: response.title,
       isExpanded: true,
@@ -96,9 +79,9 @@ class LinkResponseToLinkDtoMapper implements DataMapper<LinkResponse, LinkDto> {
       buryCount: response.buryCount,
       voteState: voteState,
       preview: // Makes link previews load in full resolution
-          response.preview != null
-              ? response.preview.split(',')[0] + '.' + response.preview.split(',')[1].split('.')[1]
-              : null,
+      response.preview != null
+          ? response.preview.split(',')[0] + '.' + response.preview.split(',')[1].split('.')[1]
+          : null,
       isFavorite: response.favorite ?? false,
       sourceUrl: response.sourceUrl,
       canVote: response.canVote,
@@ -106,7 +89,6 @@ class LinkResponseToLinkDtoMapper implements DataMapper<LinkResponse, LinkDto> {
       relatedCount: response.relatedCount,
       tags: response.tags,
       violationUrl: response.violationUrl,
-      app: response.app,
-    );
+      app: response.app,);
   }
 }
