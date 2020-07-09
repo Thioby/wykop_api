@@ -54,6 +54,7 @@ class EntryResponseToDtoMapper implements DataMapper<EntryResponse, EntryDto> {
 
   @override
   EntryDto apply(EntryResponse response) {
+    if(response == null) return null;
     List<EntryCommentDto> mappedComments = response.comments?.map(_commentDtoMapper.apply)?.toList() ?? [];
 
     return EntryDto(
