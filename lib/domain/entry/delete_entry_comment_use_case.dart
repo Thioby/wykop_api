@@ -1,13 +1,13 @@
 import 'package:wykop_api/infrastucture/client.dart';
 
-class DeleteEntryUseCase {
+class DeleteEntryCommentUseCase {
   final ApiClient _client;
 
-  DeleteEntryUseCase(this._client);
+  DeleteEntryCommentUseCase(this._client);
 
   Future<bool> execute(int id) async {
     try {
-      await _client.request('entries', 'delete', api: [id.toString()]);
+      await _client.request('entries', 'commentdelete', api: [id.toString()]);
       return true;
     } catch (error) {
       return false;

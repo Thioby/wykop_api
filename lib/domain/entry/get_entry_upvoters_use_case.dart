@@ -1,16 +1,17 @@
 import 'package:wykop_api/infrastucture/client.dart';
 import 'package:wykop_api/infrastucture/data/model/dtoModels.dart';
+import 'package:wykop_api/infrastucture/response_models/voter_response.dart';
 
-class GetSingleEntryUseCase {
+class GetEntryUpvotersUseCase {
   final ApiClient _client;
-  final EntryResponseToDtoMapper _entryResponseToDtoMapper;
+  final VoterResponseToVoterDtoMapper _voterResponseToVoterDtoMapper;
 
-  GetSingleEntryUseCase(this._client, this._entryResponseToDtoMapper);
+  GetEntryUpvotersUseCase(this._client, this._voterResponseToVoterDtoMapper);
 
-  Future<EntryDto> execute(int id) async {
-    var items = await _client.request('entries', 'entry', api: [id.toString()]);
-    return _entryResponseToDtoMapper.apply(
-      _client.deserializeElement(EntryResponse.serializer, items),
-    );
+  Future<List<VoterDto>> execute(int id) async {
+    var items = await _client.request('entries', 'upvoters', api: [id.toString()]);
+    print(items);
+    var voters = _client.deserializeList(VoterResponse.serializer, items);
+    return voters.map(_voterResponseToVoterDtoMapper.apply).toList();
   }
 }

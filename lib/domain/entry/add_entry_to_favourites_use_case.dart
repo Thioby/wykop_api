@@ -6,11 +6,7 @@ class AddEntryToFavouritesUseCase {
   AddEntryToFavouritesUseCase(this._client);
 
   Future<bool> execute(int id) async {
-    try {
-      await _client.request('entries', 'delete', api: [id.toString()]);
-      return true;
-    } catch (error) {
-      return false;
-    }
+    var res = await _client.request('entries', 'favorite', api: [id.toString()]);
+    return res["user_favorite"] as bool;
   }
 }

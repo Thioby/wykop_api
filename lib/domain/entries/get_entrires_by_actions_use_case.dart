@@ -3,11 +3,11 @@ import 'package:wykop_api/domain/entries/entry_action_type.dart';
 import 'package:wykop_api/infrastucture/client.dart';
 import 'package:wykop_api/infrastucture/data/model/EntryDto.dart';
 
-class EntriesActionsUseCase {
+class GetEntriesByActionsUseCase {
   final ApiClient _client;
   final EntryResponseToDtoMapper _entryResponseToDtoMapper;
 
-  EntriesActionsUseCase(this._client, this._entryResponseToDtoMapper);
+  GetEntriesByActionsUseCase(this._client, this._entryResponseToDtoMapper);
 
   Future<List<EntryDto>> execute({EntryActionsType type, params}) async {
     var items = await _client.request('entries', getActionNameByType(type), named: params);

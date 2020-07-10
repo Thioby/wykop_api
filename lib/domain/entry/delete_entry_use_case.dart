@@ -6,6 +6,11 @@ class DeleteEntryUseCase {
   DeleteEntryUseCase(this._client);
 
   Future<bool> execute(int id) async {
-    await _client.request('entries', 'delete', api: [id.toString()]);
+    try {
+      await _client.request('entries', 'delete', api: [id.toString()]);
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 }

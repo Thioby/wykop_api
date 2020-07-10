@@ -1,17 +1,16 @@
 import 'package:wykop_api/infrastucture/client.dart';
 import 'package:wykop_api/infrastucture/data/model/dtoModels.dart';
-import 'package:wykop_api/infrastucture/response_models/voter_response.dart';
 
-class EditEntryCommentUpvotersUseCase {
+class EditEntryCommentUseCase {
   final ApiClient _client;
-  final VoterResponseToVoterDtoMapper _voterResponseToVoterDtoMapper;
+  final EntryCommentResponseToEntryCommentDtoMapper _commentDtoMapper;
 
-  EditEntryCommentUpvotersUseCase(this._client, this._voterResponseToVoterDtoMapper);
+  EditEntryCommentUseCase(this._client, this._commentDtoMapper);
 
-  Future<List<VoterDto>> execute(int id) async {
-    var items = await _client.request('entries', 'commentupvoters', api: [id.toString()]);
-    print(items);
-    var voters = _client.deserializeList(VoterResponse.serializer, items);
-    return voters.map(_voterResponseToVoterDtoMapper.apply).toList();
+  Future<EntryCommentDto> execute(int id, InputData data) async {
+    var entry = await _client.request('entries', 'CommentEdit', api: [id.toString()], post: {'body': data.body}, image: data.file);
+    return _commentDtoMapper.apply(
+      _client.deserializeElement(EntryCommentResponse.serializer, entry),
+    );
   }
 }

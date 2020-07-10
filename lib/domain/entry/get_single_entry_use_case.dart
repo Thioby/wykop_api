@@ -1,15 +1,16 @@
 import 'package:wykop_api/infrastucture/client.dart';
 import 'package:wykop_api/infrastucture/data/model/dtoModels.dart';
 
-class EditEntryUseCase {
+class GetSingleEntryUseCase {
   final ApiClient _client;
   final EntryResponseToDtoMapper _entryResponseToDtoMapper;
 
-  EditEntryUseCase(this._client, this._entryResponseToDtoMapper);
+  GetSingleEntryUseCase(this._client, this._entryResponseToDtoMapper);
 
-  Future<EntryDto> execute(int id, InputData data) async {
-    var entry =
-        await _client.request('entries', 'edit', api: [id.toString()], post: {'body': data.body}, image: data.file);
-    return _entryResponseToDtoMapper.apply(_client.deserializeElement(EntryResponse.serializer, entry));
+  Future<EntryDto> execute(int id) async {
+    var items = await _client.request('entries', 'entry', api: [id.toString()]);
+    return _entryResponseToDtoMapper.apply(
+      _client.deserializeElement(EntryResponse.serializer, items),
+    );
   }
 }

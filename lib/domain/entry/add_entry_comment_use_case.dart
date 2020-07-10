@@ -1,16 +1,16 @@
 import 'package:wykop_api/infrastucture/client.dart';
 import 'package:wykop_api/infrastucture/data/model/dtoModels.dart';
 
-class GetSingleEntryUseCase {
+class AddEntryCommentUseCase {
   final ApiClient _client;
-  final EntryResponseToDtoMapper _entryResponseToDtoMapper;
+  final EntryCommentResponseToEntryCommentDtoMapper _commentDtoMapper;
 
-  GetSingleEntryUseCase(this._client, this._entryResponseToDtoMapper);
+  AddEntryCommentUseCase(this._client, this._commentDtoMapper);
 
-  Future<EntryDto> execute(int id) async {
-    var items = await _client.request('entries', 'entry', api: [id.toString()]);
-    return _entryResponseToDtoMapper.apply(
-      _client.deserializeElement(EntryResponse.serializer, items),
-    );
+  Future<EntryCommentDto> execute(int id, InputData data) async {
+    var comment = await _client.request('entries', 'commentadd',
+        api: [id.toString()], post: {'body': data.body}, image: data.file);
+
+    return _commentDtoMapper.apply(_client.deserializeElement(EntryCommentResponse.serializer, comment));
   }
 }

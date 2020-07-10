@@ -1,23 +1,49 @@
-import 'package:wykop_api/domain/entries/entrires_actions_use_case.dart';
+import 'package:wykop_api/domain/entries/get_entrires_by_actions_use_case.dart';
 import 'package:wykop_api/domain/entries/entry_action_type.dart';
-import 'package:wykop_api/infrastucture/api.dart';
-import 'package:wykop_api/infrastucture/client.dart';
+import 'package:wykop_api/domain/entry/add_entry_comment_use_case.dart';
+import 'package:wykop_api/domain/entry/add_entry_to_favourites_use_case.dart';
+import 'package:wykop_api/domain/entry/add_entry_use_case.dart';
+import 'package:wykop_api/domain/entry/delete_entry_comment_use_case.dart';
+import 'package:wykop_api/domain/entry/delete_entry_use_case.dart';
+import 'package:wykop_api/domain/entry/edit_entry_comment_use_case.dart';
+import 'package:wykop_api/domain/entry/edit_entry_use_case.dart';
+import 'package:wykop_api/domain/entry/get_entry_comment_upvoters_use_case.dart';
+import 'package:wykop_api/domain/entry/get_entry_upvoters_use_case.dart';
+import 'package:wykop_api/domain/entry/get_single_entry_use_case.dart';
+import 'package:wykop_api/domain/entry/vote_entry_use_case.dart';
 import 'package:wykop_api/infrastucture/data/model/EntryCommentDto.dart';
 import 'package:wykop_api/infrastucture/data/model/EntryDto.dart';
 import 'package:wykop_api/infrastucture/data/model/InputData.dart';
 import 'package:wykop_api/infrastucture/data/model/VoterDto.dart';
-import 'package:wykop_api/infrastucture/response_models/voter_response.dart';
-import 'package:wykop_api/resources/resources.dart';
 
-class EntriesApi extends ApiResource {
-  final EntryResponseToDtoMapper _entryResponseToDtoMapper;
-  final EntryCommentResponseToEntryCommentDtoMapper _commentDtoMapper;
-  final VoterResponseToVoterDtoMapper _voterResponseToVoterDtoMapper;
-  final EntriesActionsUseCase _entriesActionsUseCase;
+class EntriesApi {
+  final GetEntriesByActionsUseCase _entriesActionsUseCase;
+  final DeleteEntryUseCase _deleteEntryUseCase;
+  final EditEntryUseCase _editEntryUseCase;
+  final GetSingleEntryUseCase _getSingleEntryUseCase;
+  final AddEntryCommentUseCase _addEntryCommentUseCase;
+  final VoteUpEntryUseCase _voteUpEntryUseCase;
+  final AddEntryToFavouritesUseCase _addEntryToFavouritesUseCase;
+  final AddEntryUseCase _addEntryUseCase;
+  final GetEntryUpvotersUseCase _getEntryUpvotersUseCase;
+  final GetEntryCommentUpvotersUseCase _getEntryCommentsUpvotersUseCase;
+  final EditEntryCommentUseCase _editEntryCommentUseCase;
+  final DeleteEntryCommentUseCase _deleteEntryCommentUseCase;
 
-  EntriesApi(ApiClient client, this._entryResponseToDtoMapper, this._commentDtoMapper,
-      this._voterResponseToVoterDtoMapper, this._entriesActionsUseCase)
-      : super(client);
+  EntriesApi(
+    this._entriesActionsUseCase,
+    this._deleteEntryUseCase,
+    this._editEntryUseCase,
+    this._getSingleEntryUseCase,
+    this._addEntryCommentUseCase,
+    this._voteUpEntryUseCase,
+    this._addEntryToFavouritesUseCase,
+    this._addEntryUseCase,
+    this._getEntryUpvotersUseCase,
+    this._getEntryCommentsUpvotersUseCase,
+    this._editEntryCommentUseCase,
+    this._deleteEntryCommentUseCase,
+  );
 
 // entry actions use case
   Future<List<EntryDto>> getFavorite(int page) async {
@@ -40,97 +66,59 @@ class EntriesApi extends ApiResource {
     return _entriesActionsUseCase.execute(type: EntryActionsType.ACTIVE, params: params);
   }
 
-  //end of entry actions
-
   Future<EntryDto> getEntry(int id) async {
-    var items = await client.request('entries', 'entry', api: [id.toString()]);
-    return _entryResponseToDtoMapper.apply(
-      client.deserializeElement(EntryResponse.serializer, items),
-    );
+    return _getSingleEntryUseCase.execute(id);
   }
 
   Future<EntryCommentDto> addEntryComment(int entryId, InputData data) async {
-    var comment = await client.request('entries', 'commentadd',
-        api: [entryId.toString()], post: {'body': data.body}, image: data.file);
-    print(comment);
-    return deserializeEntryComment(comment);
+    return _addEntryCommentUseCase.execute(entryId, data);
   }
 
   Future<List<VoterDto>> getEntryUpVoters(int entryId) async {
-    var items = await client.request('entries', 'upvoters', api: [entryId.toString()]);
-    print(items);
-    var voters = client.deserializeList(VoterResponse.serializer, items);
-    return voters.map(_voterResponseToVoterDtoMapper.apply).toList();
+    return _getEntryUpvotersUseCase.execute(entryId);
   }
 
   Future<List<VoterDto>> getEntryCommentUpVoters(int entryId) async {
-    var items = await client.request('entries', 'commentupvoters', api: [entryId.toString()]);
-    print(items);
-    var voters = client.deserializeList(VoterResponse.serializer, items);
-    return voters.map(_voterResponseToVoterDtoMapper.apply).toList();
+    return _getEntryCommentsUpvotersUseCase.execute(entryId);
   }
 
   Future<EntryDto> addEntry(InputData data) async {
-    var entry = await client.request('entries', 'add', post: {'body': data.body}, image: data.file);
-    return deserializeEntry(entry);
+    return _addEntryUseCase.execute(data);
   }
 
   Future<int> voteUp(int id) async {
-    var voteCount = await client.request('entries', 'voteup', api: [id.toString()]);
-
-    return int.parse(voteCount["vote_count"]);
+    return _voteUpEntryUseCase.execute(id, VoteType.UP);
   }
 
   Future<bool> markFavorite(int id) async {
-    var res = await client.request('entries', 'favorite', api: [id.toString()]);
-    return res["user_favorite"] as bool;
+    return _addEntryToFavouritesUseCase.execute(id);
   }
 
   Future<int> voteDown(int id) async {
-    var voteCount = await client.request('entries', 'voteremove', api: [id.toString()]);
-    print(voteCount);
-    return int.parse(voteCount["vote_count"]);
+    return _voteUpEntryUseCase.execute(id, VoteType.DOWN);
   }
 
   Future<int> voteComemntUp(int id) async {
-    var voteCount = await client.request('entries', 'commentvoteup', api: [id.toString()]);
-
-    return int.parse(voteCount["vote_count"]);
-  }
-
-  Future<void> deleteEntry(int id) async {
-    await client.request('entries', 'delete', api: [id.toString()]);
-  }
-
-  Future<EntryDto> editEntry(int id, InputData data) async {
-    var entry =
-        await client.request('entries', 'edit', api: [id.toString()], post: {'body': data.body}, image: data.file);
-    return _entryResponseToDtoMapper.apply(client.deserializeElement(EntryResponse.serializer, entry));
-  }
-
-  Future<EntryCommentDto> editEntryComment(int id, InputData data) async {
-    var entry = await client.request('entries', 'CommentEdit',
-        api: [id.toString()], post: {'body': data.body}, image: data.file);
-    return _commentDtoMapper.apply(
-      client.deserializeElement(EntryCommentResponse.serializer, entry),
-    );
-  }
-
-  Future<void> deleteComment(int id) async {
-    await client.request('entries', 'commentdelete', api: [id.toString()]);
+    return _voteUpEntryUseCase.execute(id, VoteType.COMMENT_UP);
   }
 
   Future<int> voteCommentDown(int id) async {
-    var voteCount = await client.request('entries', 'commentvoteremove', api: [id.toString()]);
-    print(voteCount);
-    return int.parse(voteCount["vote_count"]);
+    return _voteUpEntryUseCase.execute(id, VoteType.COMMENT_DOWN);
   }
 
-  EntryDto deserializeEntry(dynamic item) {
-    return _entryResponseToDtoMapper.apply(client.deserializeElement(EntryResponse.serializer, item));
+  Future<bool> deleteEntry(int id) async {
+    return await _deleteEntryUseCase.execute(id);
   }
 
-  EntryCommentDto deserializeEntryComment(dynamic item) {
-    return _commentDtoMapper.apply(client.deserializeElement(EntryCommentResponse.serializer, item));
+  Future<EntryDto> editEntry(int id, InputData data) async {
+    return _editEntryUseCase.execute(id, data);
+  }
+
+  Future<EntryCommentDto> editEntryComment(int id, InputData data) async {
+    return _editEntryCommentUseCase.execute(id, data);
+  }
+
+  Future<bool> deleteComment(int id) async {
+    return _deleteEntryCommentUseCase.execute(id);
   }
 }
