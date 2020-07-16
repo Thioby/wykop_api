@@ -5,7 +5,21 @@ import 'package:wykop_api/resources/resources.dart';
 void setupApiDeps(ApiClient client) {
   appInjector.addDependency<ApiClient>(() => client);
   appInjector.addDependency<LinksApi>(
-      () => LinksApi(appInjector.getDependency(), appInjector.getDependency(), appInjector.getDependency(), appInjector.getDependency()));
+    () => LinksApi(
+      appInjector.getDependency(),
+      appInjector.getDependency(),
+      appInjector.getDependency(),
+      appInjector.getDependency(),
+      appInjector.getDependency(),
+      appInjector.getDependency(),
+      appInjector.getDependency(),
+      appInjector.getDependency(),
+      appInjector.getDependency(),
+      appInjector.getDependency(),
+      appInjector.getDependency(),
+      appInjector.getDependency(),
+    ),
+  );
   appInjector.addDependency<TagsApi>(() => TagsApi(appInjector.getDependency(), appInjector.getDependency(), appInjector.getDependency(),
       appInjector.getDependency(), appInjector.getDependency()));
   appInjector.addDependency<PmApi>(

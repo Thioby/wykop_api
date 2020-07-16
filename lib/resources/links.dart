@@ -1,16 +1,28 @@
+import 'package:wykop_api/domain/link/add_link_comments_use_case.dart';
+import 'package:wykop_api/domain/link/add_link_to_favourites_use_case.dart';
+import 'package:wykop_api/domain/link/bury_link_use_case.dart';
+import 'package:wykop_api/domain/link/delete_link_comment_use_case.dart';
+import 'package:wykop_api/domain/link/edit_link_comments_use_case.dart';
+import 'package:wykop_api/domain/link/get_hit_links_use_case.dart';
+import 'package:wykop_api/domain/link/get_link_comments_use_case.dart';
+import 'package:wykop_api/domain/link/get_links_use_case.dart';
+import 'package:wykop_api/domain/link/get_related_links_use_case.dart';
+import 'package:wykop_api/domain/link/get_single_link_use_case.dart';
 import 'package:wykop_api/domain/link/link_vote_state.dart';
-import 'package:wykop_api/infrastucture/api.dart';
+import 'package:wykop_api/domain/link/vote_link_comment_use_case.dart';
+import 'package:wykop_api/domain/link/vote_link_use_case.dart';
 import 'package:wykop_api/infrastucture/data/model/InputData.dart';
 import 'package:wykop_api/infrastucture/data/model/LinkCommentDto.dart';
 import 'package:wykop_api/infrastucture/data/model/LinkDto.dart';
 import 'package:wykop_api/infrastucture/data/model/RelatedDto.dart';
-import 'package:wykop_api/infrastucture/client.dart';
 import 'package:wykop_api/resources/resources.dart';
+
 // Used for vote up, vote down and vote cancel responses
 class VoteStateResponse {
   final int votesPlus;
   final int votes;
   final int state;
+
   VoteStateResponse({this.votes, this.votesPlus, this.state});
 }
 
@@ -26,6 +38,7 @@ class DigResponse {
   final int digs;
   final int buries;
   final LinkVoteState state;
+
   DigResponse({this.digs, this.buries, this.state});
 }
 
@@ -36,139 +49,106 @@ class UpcomingSort {
   static const SORTBY_ACTIVE = "active";
 }
 
-class LinksApi extends ApiResource {
-  final LinkCommentResponseToLinkCommentDtoMapper _linkCommentDtoMapper;
-  final LinkResponseToLinkDtoMapper _linkDtoMapper;
-  final RelatedResponseToRelatedDtoMapper _relatedDtoMapper;
+class LinksApi {
+  final GetSingleLinkUseCase _getSingleLinkUseCase;
+  final AddLinkToFavouritesUseCase _addLinkToFavouritesUseCase;
+  final VoteLinkUseCase _voteLinkUseCase;
+  final BuryLinkUseCase _buryLinkUseCase;
+  final VoteLinkCommentUseCase _voteLinkCommentUseCase;
+  final GetRelatedLinkUseCase _getRelatedLinkUseCase;
+  final DeleteLinkCommentUseCase _deleteLinkCommentUseCase;
+  final GetLinksByActionUseCase _getLinksByActionUseCase;
+  final GetLinkCommentsUseCase _getLinkCommentsUseCase;
+  final EditLinkCommentUseCase _editLinkCommentUseCase;
+  final AddLinkCommentUseCase _addLinkCommentUseCase;
+  final GetHitLinksByPeriodUseCase _getHitLinksByPeriodUseCase;
 
-  LinksApi(ApiClient client, this._linkCommentDtoMapper, this._linkDtoMapper, this._relatedDtoMapper) : super(client);
-
-  Future<List<LinkDto>> _getLinks(String resource, String endpoint, int page) async {
-    var items = await client.request(resource, endpoint, named: {'page': page.toString()});
-    return client.deserializeList(LinkResponse.serializer, items).map(_linkDtoMapper.apply).toList();
-  }
+  LinksApi(
+    this._getSingleLinkUseCase,
+    this._addLinkToFavouritesUseCase,
+    this._voteLinkUseCase,
+    this._buryLinkUseCase,
+    this._voteLinkCommentUseCase,
+    this._getRelatedLinkUseCase,
+    this._deleteLinkCommentUseCase,
+    this._getLinksByActionUseCase,
+    this._getLinkCommentsUseCase,
+    this._editLinkCommentUseCase,
+    this._addLinkCommentUseCase,
+    this._getHitLinksByPeriodUseCase,
+  );
 
   Future<List<LinkDto>> getUpcoming(String sortBy, int page) async {
-    var items = await client.request('links', 'upcoming', named: {'page': page.toString(), 'sort': sortBy});
-    return client.deserializeList(LinkResponse.serializer, items).map(_linkDtoMapper.apply).toList();
+    return _getLinksByActionUseCase.execute(page, LinkActionType.UPCOMING, sortyBy: sortBy);
   }
 
-  Future<List<LinkDto>> getPromotedNew(int page) => _getLinks('links', 'promoted', page);
+  Future<List<LinkDto>> getPromotedNew(int page) => _getLinksByActionUseCase.execute(page, LinkActionType.PROMOTED);
 
-  Future<List<LinkDto>> getFavoriteNew(int page) => _getLinks('links', 'observed', page);
+  Future<List<LinkDto>> getFavoriteNew(int page) => _getLinksByActionUseCase.execute(page, LinkActionType.OBSERVED);
 
-  Future<List<LinkDto>> getHitsPopular(int page) => _getLinks('hits', 'popular', page);
+  Future<List<LinkDto>> getHitsPopular(int page) => _getLinksByActionUseCase.execute(page, LinkActionType.POPULAR);
 
-  Future<void> deleteComment(int id) async {
-    await client.request('links', 'commentdelete', api: [id.toString()]);
+  Future<bool> deleteComment(int id) async {
+    return _deleteLinkCommentUseCase.execute(id);
   }
 
-  Future<List<LinkDto>> getHitsDay(int page) => _getLinks('hits', 'day', page);
+  Future<List<LinkDto>> getHitsDay(int page) => _getHitLinksByPeriodUseCase.execute(page, LinkHitsPeriod.DAY);
 
-  Future<List<LinkDto>> getHitsWeek(int page) => _getLinks('hits', 'week', page);
+  Future<List<LinkDto>> getHitsWeek(int page) => _getHitLinksByPeriodUseCase.execute(page, LinkHitsPeriod.WEEK);
+
   Future<List<LinkDto>> getHitsMonth(int page, int month, int year) async {
-    var items = await client
-        .request('hits', 'month', named: {'page': page.toString()}, api: [year.toString(), month.toString()]);
-    return client.deserializeList(LinkResponse.serializer, items).map(_linkDtoMapper.apply).toList();
+    return _getHitLinksByPeriodUseCase.execute(page, LinkHitsPeriod.MONTH, month: month.toString(), year: year.toString());
   }
 
   Future<List<LinkDto>> getHitsYear(int page, int year) async {
-    var items = await client.request('hits', 'year', named: {'page': page.toString()}, api: [year.toString()]);
-    return client.deserializeList(LinkResponse.serializer, items).map(_linkDtoMapper.apply).toList();
+    return _getHitLinksByPeriodUseCase.execute(page, LinkHitsPeriod.YEAR, year: year.toString());
   }
 
   Future<LinkDto> getLink(int linkId) async {
-    var items = await client.request('links', 'link', api: [linkId.toString()]);
-    return deserializeLink(items);
+    return _getSingleLinkUseCase.execute(linkId);
   }
 
   Future<List<LinkCommentDto>> getLinkComments(int linkId) async {
-    var items = await client.request('links', 'comments', api: [linkId.toString()]);
-    return deserializeLinkComments(items);
+    return _getLinkCommentsUseCase.execute(linkId);
   }
 
   Future<bool> markFavorite(int id) async {
-    var res = await client.request('links', 'favorite', api: [id.toString()]);
-    return res["user_favorite"] as bool;
+    return _addLinkToFavouritesUseCase.execute(id);
   }
 
   Future<DigResponse> voteUp(String linkId) async {
-    var voteCount = await client.request('links', 'voteup', api: [linkId]);
-    print(voteCount);
-    return DigResponse(digs: voteCount["digs"], buries: voteCount["buries"], state: LinkVoteState.DIGGED);
+    return _voteLinkUseCase.execute(linkId, LinkVoteType.UP);
   }
 
   Future<DigResponse> voteRemove(String linkId) async {
-    var voteCount = await client.request('links', 'voteremove', api: [linkId]);
-
-    return DigResponse(digs: voteCount["digs"], buries: voteCount["buries"], state: LinkVoteState.NONE);
+    return _voteLinkUseCase.execute(linkId, LinkVoteType.DOWN);
   }
 
-  Future<DigResponse> voteDown(String linkId, int reason) async {
-    var voteCount = await client.request('links', 'votedown', api: [linkId, reason.toString()]);
-
-    return DigResponse(digs: voteCount["digs"], buries: voteCount["buries"], state: LinkVoteState.BURIED);
+  Future<DigResponse> voteBury(String linkId, int reason) async {
+    return _buryLinkUseCase.execute(linkId, reason);
   }
 
   Future<VoteStateResponse> commentVoteUp(int linkCommentId, String linkId) async {
-    var voteCount = await client.request('links', 'commentvoteup', api: [linkId, linkCommentId.toString()]);
-
-    return VoteStateResponse(votes: voteCount["vote_count"], votesPlus: voteCount["vote_count_plus"], state: 1);
+    return _voteLinkCommentUseCase.execute(linkId, linkCommentId, LinkCommentVoteType.UP);
   }
 
   Future<VoteStateResponse> commentVoteRemove(int linkCommentId, String linkId) async {
-    var voteCount = await client.request('links', 'commentvotecancel', api: [linkId, linkCommentId.toString()]);
-
-    return VoteStateResponse(votes: voteCount["vote_count"], votesPlus: voteCount["vote_count_plus"], state: 0);
+    return _voteLinkCommentUseCase.execute(linkId, linkCommentId, LinkCommentVoteType.CANCEL);
   }
 
   Future<VoteStateResponse> commentVoteDown(int linkCommentId, String linkId) async {
-    var voteCount = await client.request('links', 'CommentVoteDown', api: [linkId, linkCommentId.toString()]);
-
-    return VoteStateResponse(votes: voteCount["vote_count"], votesPlus: voteCount["vote_count_plus"], state: -1);
+    return _voteLinkCommentUseCase.execute(linkId, linkCommentId, LinkCommentVoteType.DOWN);
   }
 
   Future<List<RelatedDto>> getRelatedLinks(int linkId) async {
-    var items = await client.request('links', 'related', api: [linkId.toString()]);
-    return deserializeRelatedLinks(items);
+    return _getRelatedLinkUseCase.execute(linkId);
   }
 
   Future<LinkCommentDto> addComment(int linkId, InputData data, {int commentId}) async {
-    var linkComment;
-    if (commentId != null) {
-      linkComment = await client.request('links', 'CommentAdd',
-          post: {'body': data.body}, image: data.file, api: [linkId.toString(), commentId.toString()]);
-      print(linkComment);
-    } else {
-      linkComment = await client.request('links', 'CommentAdd',
-          post: {'body': data.body}, image: data.file, api: [linkId.toString()]);
-    }
-
-    return deserializeLinkComment(linkComment);
+    return _addLinkCommentUseCase.execute(linkId, data, commentId: commentId);
   }
 
   Future<LinkCommentDto> editComment(int id, InputData data) async {
-    var linkComment =
-        await client.request('links', 'CommentEdit', post: {'body': data.body}, image: data.file, api: [id.toString()]);
-
-    return deserializeLinkComment(linkComment);
-  }
-
-  List<RelatedDto> deserializeRelatedLinks(dynamic items) {
-    print(items);
-
-    return client.deserializeList(RelatedResponse.serializer, items).map(_relatedDtoMapper.apply).toList();
-  }
-
-  LinkCommentDto deserializeLinkComment(dynamic item) {
-    return _linkCommentDtoMapper.apply(client.deserializeElement(LinkCommentResponse.serializer, item));
-  }
-
-  LinkDto deserializeLink(dynamic item) {
-    return _linkDtoMapper.apply(client.deserializeElement(LinkResponse.serializer, item));
-  }
-
-  List<LinkCommentDto> deserializeLinkComments(dynamic items) {
-    return client.deserializeList(LinkCommentResponse.serializer, items).map(_linkCommentDtoMapper.apply).toList();
+    return _editLinkCommentUseCase.execute(id, data);
   }
 }

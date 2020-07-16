@@ -10,6 +10,18 @@ import 'package:wykop_api/domain/entry/get_entry_comment_upvoters_use_case.dart'
 import 'package:wykop_api/domain/entry/get_entry_upvoters_use_case.dart';
 import 'package:wykop_api/domain/entry/get_single_entry_use_case.dart';
 import 'package:wykop_api/domain/entry/vote_entry_use_case.dart';
+import 'package:wykop_api/domain/link/add_link_comments_use_case.dart';
+import 'package:wykop_api/domain/link/add_link_to_favourites_use_case.dart';
+import 'package:wykop_api/domain/link/bury_link_use_case.dart';
+import 'package:wykop_api/domain/link/delete_link_comment_use_case.dart';
+import 'package:wykop_api/domain/link/edit_link_comments_use_case.dart';
+import 'package:wykop_api/domain/link/get_hit_links_use_case.dart';
+import 'package:wykop_api/domain/link/get_link_comments_use_case.dart';
+import 'package:wykop_api/domain/link/get_links_use_case.dart';
+import 'package:wykop_api/domain/link/get_related_links_use_case.dart';
+import 'package:wykop_api/domain/link/get_single_link_use_case.dart';
+import 'package:wykop_api/domain/link/vote_link_comment_use_case.dart';
+import 'package:wykop_api/domain/link/vote_link_use_case.dart';
 import 'package:wykop_api/infrastucture/client.dart';
 import 'package:wykop_api/injection/Injector.dart';
 
@@ -26,4 +38,17 @@ void setupUseCaseDeps(ApiClient client) {
   appInjector.addDependency<VoteUpEntryUseCase>(() => VoteUpEntryUseCase(client));
   appInjector.addDependency<AddEntryToFavouritesUseCase>(() => AddEntryToFavouritesUseCase(client));
   appInjector.addDependency<DeleteEntryCommentUseCase>(() => DeleteEntryCommentUseCase(client));
+
+  appInjector.addDependency<GetSingleLinkUseCase>(() => GetSingleLinkUseCase(client, appInjector.getDependency()));
+  appInjector.addDependency<AddLinkToFavouritesUseCase>(() => AddLinkToFavouritesUseCase(client));
+  appInjector.addDependency<VoteLinkUseCase>(() => VoteLinkUseCase(client));
+  appInjector.addDependency<BuryLinkUseCase>(() => BuryLinkUseCase(client));
+  appInjector.addDependency<VoteLinkCommentUseCase>(() => VoteLinkCommentUseCase(client));
+  appInjector.addDependency<DeleteLinkCommentUseCase>(() => DeleteLinkCommentUseCase(client));
+  appInjector.addDependency<GetRelatedLinkUseCase>(() => GetRelatedLinkUseCase(client, appInjector.getDependency()));
+  appInjector.addDependency<GetLinksByActionUseCase>(() => GetLinksByActionUseCase(client, appInjector.getDependency()));
+  appInjector.addDependency<GetLinkCommentsUseCase>(() => GetLinkCommentsUseCase(client, appInjector.getDependency()));
+  appInjector.addDependency<EditLinkCommentUseCase>(() => EditLinkCommentUseCase(client, appInjector.getDependency()));
+  appInjector.addDependency<AddLinkCommentUseCase>(() => AddLinkCommentUseCase(client, appInjector.getDependency()));
+  appInjector.addDependency<GetHitLinksByPeriodUseCase>(() => GetHitLinksByPeriodUseCase(client, appInjector.getDependency()));
 }
