@@ -25,6 +25,12 @@ import 'package:wykop_api/domain/link/vote_link_use_case.dart';
 import 'package:wykop_api/domain/my_wykop/get_my_wykop_index_use_case.dart';
 import 'package:wykop_api/domain/my_wykop/get_my_wykop_tags_use_case.dart';
 import 'package:wykop_api/domain/my_wykop/get_my_wykop_users_use_case.dart';
+import 'package:wykop_api/domain/notification/get_notifications.dart';
+import 'package:wykop_api/domain/notification/get_notifications_count.dart';
+import 'package:wykop_api/domain/notification/get_tag_notifications.dart';
+import 'package:wykop_api/domain/notification/get_tag_notifications_count.dart';
+import 'package:wykop_api/domain/notification/mark_as_read_notifications.dart';
+import 'package:wykop_api/domain/notification/mark_as_read_tag_notifications.dart';
 import 'package:wykop_api/infrastucture/client.dart';
 import 'package:wykop_api/injection/Injector.dart';
 
@@ -58,4 +64,11 @@ void setupUseCaseDeps(ApiClient client) {
   appInjector.addDependency<GetMyWykopUsersUseCase>(() => GetMyWykopUsersUseCase(client, appInjector.getDependency()));
   appInjector.addDependency<GetMyWykopTagsUseCase>(() => GetMyWykopTagsUseCase(client, appInjector.getDependency()));
   appInjector.addDependency<GetMyWykopIndexUseCase>(() => GetMyWykopIndexUseCase(client, appInjector.getDependency()));
+
+  appInjector.addDependency<GetNotificationsCount>(() => GetNotificationsCount(client));
+  appInjector.addDependency<GetTagNotificationsCount>(() => GetTagNotificationsCount(client));
+  appInjector.addDependency<MarkAsReadTagNotifications>(() => MarkAsReadTagNotifications(client));
+  appInjector.addDependency<MarkAsReadNotifications>(() => MarkAsReadNotifications(client));
+  appInjector.addDependency<GetNotifications>(() => GetNotifications(client, appInjector.getDependency()));
+  appInjector.addDependency<GetTagNotifications>(() => GetTagNotifications(client, appInjector.getDependency()));
 }

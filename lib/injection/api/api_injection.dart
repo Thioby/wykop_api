@@ -37,7 +37,17 @@ void setupApiDeps(ApiClient client) {
   appInjector.addDependency<EmbedApi>(() => EmbedApi(appInjector.getDependency()));
   appInjector.addDependency<SearchApi>(
       () => SearchApi(appInjector.getDependency(), appInjector.getDependency(), appInjector.getDependency(), appInjector.getDependency()));
-  appInjector.addDependency<NotificationsApi>(() => NotificationsApi(appInjector.getDependency(), appInjector.getDependency()));
+  appInjector.addDependency<NotificationsApi>(
+    () => NotificationsApi(
+      appInjector.getDependency(),
+      appInjector.getDependency(),
+      appInjector.getDependency(),
+      appInjector.getDependency(),
+      appInjector.getDependency(),
+      appInjector.getDependency(),
+      appInjector.getDependency(),
+    ),
+  );
   appInjector.addDependency<MyWykopApi>(() => MyWykopApi(
         appInjector.getDependency(),
         appInjector.getDependency(),

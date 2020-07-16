@@ -1,44 +1,44 @@
-import 'package:wykop_api/infrastucture/api.dart';
-import 'package:wykop_api/infrastucture/data/model/NotificationDto.dart';
+import 'package:wykop_api/domain/notification/get_notifications.dart';
+import 'package:wykop_api/domain/notification/get_notifications_count.dart';
+import 'package:wykop_api/domain/notification/get_tag_notifications.dart';
+import 'package:wykop_api/domain/notification/get_tag_notifications_count.dart';
+import 'package:wykop_api/domain/notification/mark_as_read_notifications.dart';
+import 'package:wykop_api/domain/notification/mark_as_read_tag_notifications.dart';
 import 'package:wykop_api/infrastucture/client.dart';
-import 'package:wykop_api/resources/resources.dart';
+import 'package:wykop_api/infrastucture/data/model/NotificationDto.dart';
 
-class NotificationsApi extends ApiResource {
-  final NotificationResponseToNotificationDtoMapper _notificationDtoMapper;
+class NotificationsApi {
+  final GetNotifications _getNotifications;
+  final GetTagNotifications _getTagNotifications;
+  final GetNotificationsCount _getNotificationsCount;
+  final GetTagNotificationsCount _getTagNotificationsCount;
+  final MarkAsReadNotifications _markAsReadNotifications;
+  final MarkAsReadTagNotifications _markAsReadTagNotifications;
 
-  NotificationsApi(ApiClient client, this._notificationDtoMapper) : super(client);
+  NotificationsApi(ApiClient client, this._getNotifications, this._getTagNotifications, this._getNotificationsCount,
+      this._getTagNotificationsCount, this._markAsReadNotifications, this._markAsReadTagNotifications);
 
   Future<List<NotificationDto>> getHashtagNotifications(int page) async {
-    var items = await client.request('notifications', 'HashTags', named: {'page': page.toString()});
-    return deserializeNotifications(items);
+    return _getTagNotifications.execute(page);
   }
 
-  Future<void> readAllHashNotifs() async {
-    await client.request('notifications', 'ReadHashTagsNotifications');
+  Future<bool> readAllHashNotifs() async {
+    return _markAsReadTagNotifications.execute();
   }
 
   Future<int> getNotificationsCount() async {
-    var items = await client.request('notifications', 'count');
-
-    return items["count"];
+    return _getNotificationsCount.execute();
   }
 
   Future<int> getHashNotificationsCount() async {
-    var items = await client.request('notifications', 'HashTagscount');
-
-    return items["count"];
+    return _getTagNotificationsCount.execute();
   }
 
-  Future<void> readAllDirectedNotifs() async {
-    await client.request('notifications', 'ReadDirectedNotifications');
+  Future<bool> readAllDirectedNotifs() async {
+    return _markAsReadNotifications.execute();
   }
 
   Future<List<NotificationDto>> getNotifications(int page) async {
-    var items = await client.request('notifications', 'Notifications', named: {'page': page.toString()});
-    return deserializeNotifications(items);
-  }
-
-  List<NotificationDto> deserializeNotifications(dynamic items) {
-    return client.deserializeList(NotificationResponse.serializer, items).map(_notificationDtoMapper.apply).toList();
+    return _getNotifications.execute(page);
   }
 }
