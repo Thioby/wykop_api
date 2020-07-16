@@ -1,58 +1,34 @@
-import 'package:wykop_api/infrastucture/api.dart';
-import 'package:wykop_api/infrastucture/data/model/AuthorDto.dart';
+import 'package:wykop_api/domain/private_message/get_coversations_list.dart';
+import 'package:wykop_api/domain/private_message/get_full_single_coversation_use_case.dart';
+import 'package:wykop_api/domain/private_message/get_simple_single_coversation_use_case.dart';
+import 'package:wykop_api/domain/private_message/send_private_message_use_case.dart';
 import 'package:wykop_api/infrastucture/data/model/ConversationData.dart';
 import 'package:wykop_api/infrastucture/data/model/ConversationDto.dart';
 import 'package:wykop_api/infrastucture/data/model/InputData.dart';
 import 'package:wykop_api/infrastucture/data/model/PmMessageDto.dart';
-import 'package:wykop_api/infrastucture/client.dart';
-import 'package:wykop_api/resources/resources.dart';
 
-class PmApi extends ApiResource {
-  final ConversationResponseToConversationDtoMapper _conversationDtoMapper;
-  final AuthorResponseToAuthorDtoMapper _authorDtoMapper;
-  final PmMessageResponseToPmMessageDtoMapper _messageResponseToPmMessageDtoMapper;
-  PmApi(ApiClient client, this._conversationDtoMapper, this._authorDtoMapper, this._messageResponseToPmMessageDtoMapper)
-      : super(client);
+class PmApi {
+  final SendPrivateMessageUseCase _sendPrivateMessageUseCase;
+  final GetConversationsList _getConversationsList;
+  final GetFullSingleConversationUseCase _getFullSingleConversationUseCase;
+  final GetSimpleSingleConversationUseCase _getSimpleSingleConversationUseCase;
+
+  PmApi(this._sendPrivateMessageUseCase, this._getConversationsList, this._getFullSingleConversationUseCase,
+      this._getSimpleSingleConversationUseCase);
 
   Future<List<ConversationDto>> getConversations() async {
-    var items = await client.request('pm', 'conversationslist');
-
-    return client.deserializeList(ConversationResponse.serializer, items).map(_conversationDtoMapper.apply).toList();
+    return _getConversationsList.execute();
   }
 
   Future<ConversationDataDto> getConversation(String receiver) async {
-    var items = await client.request('pm', 'conversation', api: [receiver], returnFullResponse: true);
-
-    var msgs = client
-        .deserializeList(PmMessageResponse.serializer, items["data"])
-        .map(_messageResponseToPmMessageDtoMapper.apply)
-        .toList();
-    var author = deserializeAuthor(items["receiver"]);
-
-    print(items);
-    return ConversationDataDto(
-      messages: msgs,
-      receiver: author,
-      lastUpdate: items["last_update"],
-    );
+    return _getFullSingleConversationUseCase.execute(receiver);
   }
 
   Future<List<PmMessageDto>> getMessages(String receiver) async {
-    var items = await client.request('pm', 'conversation', api: [receiver]);
-
-    return client
-        .deserializeList(PmMessageResponse.serializer, items)
-        .map(_messageResponseToPmMessageDtoMapper.apply)
-        .toList();
+    return _getSimpleSingleConversationUseCase.execute(receiver);
   }
 
   Future<PmMessageDto> sendMessage(String receiver, InputData data) async {
-    var pm = await client.request('pm', 'sendmessage', api: [receiver], post: {'body': data.body}, image: data.file);
-    return _messageResponseToPmMessageDtoMapper.apply(client.deserializeElement(PmMessageResponse.serializer, pm));
-  }
-
-  AuthorDto deserializeAuthor(dynamic item) {
-    AuthorResponse authorResponse = client.deserializeElement(AuthorResponse.serializer, item);
-    return _authorDtoMapper.apply(authorResponse);
+    return _sendPrivateMessageUseCase.execute(receiver, data);
   }
 }

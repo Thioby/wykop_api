@@ -31,6 +31,10 @@ import 'package:wykop_api/domain/notification/get_tag_notifications.dart';
 import 'package:wykop_api/domain/notification/get_tag_notifications_count.dart';
 import 'package:wykop_api/domain/notification/mark_as_read_notifications.dart';
 import 'package:wykop_api/domain/notification/mark_as_read_tag_notifications.dart';
+import 'package:wykop_api/domain/private_message/get_coversations_list.dart';
+import 'package:wykop_api/domain/private_message/get_full_single_coversation_use_case.dart';
+import 'package:wykop_api/domain/private_message/get_simple_single_coversation_use_case.dart';
+import 'package:wykop_api/domain/private_message/send_private_message_use_case.dart';
 import 'package:wykop_api/infrastucture/client.dart';
 import 'package:wykop_api/injection/Injector.dart';
 
@@ -71,4 +75,14 @@ void setupUseCaseDeps(ApiClient client) {
   appInjector.addDependency<MarkAsReadNotifications>(() => MarkAsReadNotifications(client));
   appInjector.addDependency<GetNotifications>(() => GetNotifications(client, appInjector.getDependency()));
   appInjector.addDependency<GetTagNotifications>(() => GetTagNotifications(client, appInjector.getDependency()));
+
+  appInjector.addDependency<SendPrivateMessageUseCase>(() => SendPrivateMessageUseCase(client, appInjector.getDependency()));
+  appInjector.addDependency<GetConversationsList>(() => GetConversationsList(client, appInjector.getDependency()));
+  appInjector
+      .addDependency<GetSimpleSingleConversationUseCase>(() => GetSimpleSingleConversationUseCase(client, appInjector.getDependency()));
+  appInjector.addDependency<GetFullSingleConversationUseCase>(() => GetFullSingleConversationUseCase(
+        client,
+        appInjector.getDependency(),
+        appInjector.getDependency(),
+      ));
 }
