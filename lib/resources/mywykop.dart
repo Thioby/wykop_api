@@ -1,28 +1,25 @@
-import 'package:wykop_api/infrastucture/api.dart';
+import 'package:wykop_api/domain/my_wykop/get_my_wykop_index_use_case.dart';
+import 'package:wykop_api/domain/my_wykop/get_my_wykop_tags_use_case.dart';
+import 'package:wykop_api/domain/my_wykop/get_my_wykop_users_use_case.dart';
 import 'package:wykop_api/infrastucture/data/model/EntryLinkDto.dart';
-import 'package:wykop_api/infrastucture/client.dart';
-import 'package:wykop_api/resources/resources.dart';
-class MyWykopApi extends ApiResource {
-  final EntryLinkResponseToEntryLinkDtoMapper _entryLinkDtoMapper;
 
-  MyWykopApi(ApiClient client, this._entryLinkDtoMapper) : super(client);
+class MyWykopApi {
+  final GetMyWykopIndexUseCase _getMyWykopIndexUseCase;
+  final GetMyWykopTagsUseCase _getMyWykopTagsUseCase;
+  final GetMyWykopUsersUseCase _getMyWykopUsersUseCase;
+
+  MyWykopApi(this._getMyWykopIndexUseCase, this._getMyWykopTagsUseCase, this._getMyWykopUsersUseCase);
 
   Future<List<EntryLinkDto>> getIndex(int page) async {
-    var items = await client.request('mywykop', 'index', named: {'page': page.toString()});
-    return deserializeEntryLinks(items);
+    return _getMyWykopIndexUseCase.execute(page);
   }
 
   Future<List<EntryLinkDto>> getTags(int page) async {
-    var items = await client.request('mywykop', 'tags', named: {'page': page.toString()});
-    return deserializeEntryLinks(items);
+    return _getMyWykopTagsUseCase.execute(page);
   }
 
   Future<List<EntryLinkDto>> getUsers(int page) async {
-    var items = await client.request('mywykop', 'users', named: {'page': page.toString()});
-    return deserializeEntryLinks(items);
+    _getMyWykopUsersUseCase.execute(page);
   }
 
-  List<EntryLinkDto> deserializeEntryLinks(dynamic items) {
-    return client.deserializeList(EntryLinkResponse.serializer, items).map(_entryLinkDtoMapper.apply).toList();
-  }
 }

@@ -22,6 +22,9 @@ import 'package:wykop_api/domain/link/get_related_links_use_case.dart';
 import 'package:wykop_api/domain/link/get_single_link_use_case.dart';
 import 'package:wykop_api/domain/link/vote_link_comment_use_case.dart';
 import 'package:wykop_api/domain/link/vote_link_use_case.dart';
+import 'package:wykop_api/domain/my_wykop/get_my_wykop_index_use_case.dart';
+import 'package:wykop_api/domain/my_wykop/get_my_wykop_tags_use_case.dart';
+import 'package:wykop_api/domain/my_wykop/get_my_wykop_users_use_case.dart';
 import 'package:wykop_api/infrastucture/client.dart';
 import 'package:wykop_api/injection/Injector.dart';
 
@@ -51,4 +54,8 @@ void setupUseCaseDeps(ApiClient client) {
   appInjector.addDependency<EditLinkCommentUseCase>(() => EditLinkCommentUseCase(client, appInjector.getDependency()));
   appInjector.addDependency<AddLinkCommentUseCase>(() => AddLinkCommentUseCase(client, appInjector.getDependency()));
   appInjector.addDependency<GetHitLinksByPeriodUseCase>(() => GetHitLinksByPeriodUseCase(client, appInjector.getDependency()));
+
+  appInjector.addDependency<GetMyWykopUsersUseCase>(() => GetMyWykopUsersUseCase(client, appInjector.getDependency()));
+  appInjector.addDependency<GetMyWykopTagsUseCase>(() => GetMyWykopTagsUseCase(client, appInjector.getDependency()));
+  appInjector.addDependency<GetMyWykopIndexUseCase>(() => GetMyWykopIndexUseCase(client, appInjector.getDependency()));
 }
