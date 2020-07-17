@@ -54,11 +54,10 @@ import 'package:wykop_api/domain/profile/observe_profile.dart';
 import 'package:wykop_api/domain/profile/unblock_profile.dart';
 import 'package:wykop_api/domain/profile/unobserve_profile.dart';
 import 'package:wykop_api/domain/search/search_entires.dart';
-import 'package:wykop_api/domain/search/search_entires.dart';
-import 'package:wykop_api/domain/search/search_index.dart';
 import 'package:wykop_api/domain/search/search_index.dart';
 import 'package:wykop_api/domain/search/search_links.dart';
-import 'package:wykop_api/domain/search/search_links.dart';
+import 'package:wykop_api/domain/suggestion/get_tags_suggestion.dart';
+import 'package:wykop_api/domain/suggestion/get_users_suggestion.dart';
 import 'package:wykop_api/infrastucture/client.dart';
 import 'package:wykop_api/injection/Injector.dart';
 
@@ -133,4 +132,6 @@ void setupUseCaseDeps(ApiClient client) {
   appInjector.addDependency<SearchEntries>(() => SearchEntries(client, appInjector.getDependency()));
   appInjector.addDependency<SearchLinks>(() => SearchLinks(client, appInjector.getDependency()));
 
+  appInjector.addDependency<GetTagsSuggestion>(() => GetTagsSuggestion(client, appInjector.getDependency()));
+  appInjector.addDependency<GetUsersSuggestion>(() => GetUsersSuggestion(client, appInjector.getDependency()));
 }
