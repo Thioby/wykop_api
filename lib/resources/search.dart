@@ -1,42 +1,26 @@
-import 'package:wykop_api/infrastucture/api.dart';
+import 'package:wykop_api/domain/search/search_entires.dart';
+import 'package:wykop_api/domain/search/search_index.dart';
+import 'package:wykop_api/domain/search/search_links.dart';
 import 'package:wykop_api/infrastucture/data/model/EntryDto.dart';
 import 'package:wykop_api/infrastucture/data/model/EntryLinkDto.dart';
 import 'package:wykop_api/infrastucture/data/model/LinkDto.dart';
-import 'package:wykop_api/infrastucture/client.dart';
-import 'package:wykop_api/resources/resources.dart';
 
-class SearchApi extends ApiResource {
-  final EntryResponseToDtoMapper _entryResponseToDtoMapper;
-  final LinkResponseToLinkDtoMapper _linkDtoMapper;
-  final EntryLinkResponseToEntryLinkDtoMapper _entryLinkDtoMapper;
+class SearchApi {
+  final SearchLinks _searchLinks;
+  final SearchEntries _searchEntries;
+  final SearchIndex _searchIndex;
 
-  SearchApi(ApiClient client, this._entryResponseToDtoMapper, this._linkDtoMapper, this._entryLinkDtoMapper)
-      : super(client);
+  SearchApi(this._searchLinks, this._searchEntries, this._searchIndex);
 
   Future<List<EntryDto>> searchEntries(int page, String q) async {
-    var items = await client.request('search', 'entries', named: {'page': page.toString()}, post: {'q': q});
-    return deserializeEntries(items);
+    return _searchEntries.execute(q: q, page: page);
   }
 
   Future<List<LinkDto>> searchLinks(int page, String q) async {
-    var items = await client.request('search', 'links', named: {'page': page.toString()}, post: {'q': q});
-    return deserializeLinks(items);
+    return _searchLinks.execute(q: q, page: page);
   }
 
   Future<List<EntryLinkDto>> searchIndex(int page, String q) async {
-    var items = await client.request('search', 'index', named: {'page': page.toString()}, post: {'q': q});
-    return deserializeEntryLinks(items);
-  }
-
-  List<EntryDto> deserializeEntries(dynamic items) {
-    return client.deserializeList(EntryResponse.serializer, items).map(_entryResponseToDtoMapper.apply).toList();
-  }
-
-  List<LinkDto> deserializeLinks(dynamic items) {
-    return client.deserializeList(LinkResponse.serializer, items).map(_linkDtoMapper.apply).toList();
-  }
-
-  List<EntryLinkDto> deserializeEntryLinks(dynamic items) {
-    return client.deserializeList(EntryLinkResponse.serializer, items).map(_entryLinkDtoMapper.apply).toList();
+    return _searchIndex.execute(q: q, page: page);
   }
 }

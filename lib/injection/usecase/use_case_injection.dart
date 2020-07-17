@@ -53,6 +53,12 @@ import 'package:wykop_api/domain/profile/get_profile_related.dart';
 import 'package:wykop_api/domain/profile/observe_profile.dart';
 import 'package:wykop_api/domain/profile/unblock_profile.dart';
 import 'package:wykop_api/domain/profile/unobserve_profile.dart';
+import 'package:wykop_api/domain/search/search_entires.dart';
+import 'package:wykop_api/domain/search/search_entires.dart';
+import 'package:wykop_api/domain/search/search_index.dart';
+import 'package:wykop_api/domain/search/search_index.dart';
+import 'package:wykop_api/domain/search/search_links.dart';
+import 'package:wykop_api/domain/search/search_links.dart';
 import 'package:wykop_api/infrastucture/client.dart';
 import 'package:wykop_api/injection/Injector.dart';
 
@@ -122,4 +128,9 @@ void setupUseCaseDeps(ApiClient client) {
   appInjector.addDependency<GetProfileRelated>(() => GetProfileRelated(client, appInjector.getDependency()));
   appInjector.addDependency<GetFollowedByProfile>(() => GetFollowedByProfile(client, appInjector.getDependency()));
   appInjector.addDependency<GetProfile>(() => GetProfile(client, appInjector.getDependency()));
+
+  appInjector.addDependency<SearchIndex>(() => SearchIndex(client, appInjector.getDependency()));
+  appInjector.addDependency<SearchEntries>(() => SearchEntries(client, appInjector.getDependency()));
+  appInjector.addDependency<SearchLinks>(() => SearchLinks(client, appInjector.getDependency()));
+
 }
