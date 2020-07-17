@@ -1,3 +1,4 @@
+import 'package:wykop_api/infrastucture/data/model/ProfileDto.dart';
 import 'package:wykop_api/infrastucture/data/model/dtoModels.dart';
 import 'package:wykop_api/injection/Injector.dart';
 
@@ -30,5 +31,6 @@ void setupMappersDeps() {
   appInjector.addDependency<TagSuggestionResponseToTagSuggestionDtoMapper>(
       () => TagSuggestionResponseToTagSuggestionDtoMapper());
   appInjector.addDependency<VoterResponseToVoterDtoMapper>(() => VoterResponseToVoterDtoMapper(authorMapper));
+  appInjector.addDependency<ProfileResponseToProfileDtoMapper>(() => ProfileResponseToProfileDtoMapper());
 }
 

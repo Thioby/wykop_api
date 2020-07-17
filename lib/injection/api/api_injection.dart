@@ -27,13 +27,25 @@ void setupApiDeps(ApiClient client) {
   appInjector
       .addDependency<SuggestApi>(() => SuggestApi(appInjector.getDependency(), appInjector.getDependency(), appInjector.getDependency()));
   appInjector.addDependency<ProfilesApi>(() => ProfilesApi(
-      appInjector.getDependency(),
-      appInjector.getDependency(),
-      appInjector.getDependency(),
-      appInjector.getDependency(),
-      appInjector.getDependency(),
-      appInjector.getDependency(),
-      appInjector.getDependency()));
+        appInjector.getDependency(),
+        appInjector.getDependency(),
+        appInjector.getDependency(),
+        appInjector.getDependency(),
+        appInjector.getDependency(),
+        appInjector.getDependency(),
+        appInjector.getDependency(),
+        appInjector.getDependency(),
+        appInjector.getDependency(),
+        appInjector.getDependency(),
+        appInjector.getDependency(),
+        appInjector.getDependency(),
+        appInjector.getDependency(),
+        appInjector.getDependency(),
+        appInjector.getDependency(),
+        appInjector.getDependency(),
+        appInjector.getDependency(),
+        appInjector.getDependency(),
+      ));
   appInjector.addDependency<EmbedApi>(() => EmbedApi(appInjector.getDependency()));
   appInjector.addDependency<SearchApi>(
       () => SearchApi(appInjector.getDependency(), appInjector.getDependency(), appInjector.getDependency(), appInjector.getDependency()));
